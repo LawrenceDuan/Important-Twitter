@@ -33,7 +33,6 @@ class MyListener(StreamListener):
         try:
             with open(self.outfile, 'a') as f:
                 f.write(data)
-                print(data)
                 return True
         except BaseException as e:
             print("Error on_data: %s" % str(e))
@@ -77,6 +76,8 @@ if __name__ == '__main__':
     auth = OAuthHandler(config.consumer_key, config.consumer_secret)
     auth.set_access_token(config.access_token, config.access_secret)
     api = tweepy.API(auth)
-
+try:
     twitter_stream = Stream(auth, MyListener(args.data_dir, args.query))
     twitter_stream.filter(track=[args.query])
+except (KeyboardInterrupt, SystemExit):
+    print('hahahah')
