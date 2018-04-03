@@ -1,5 +1,15 @@
 import json
 
+# Full version of pretty json
+with open('data/stream_movie.json', 'r') as f:
+    content = f.readlines() # read only the first tweet/line
+    for tweet in content:
+        t = json.loads(tweet)
+        with open('data/stream_movie_pretty.json', 'a') as ff:
+            ff.write(json.dumps(t,indent=4)) # pretty-print
+            ff.write('\n')
+
+# Required fields version of json
 with open('data/stream_movie.json', 'r') as f:
     content = f.readlines() # read only the first tweet/line
     for tweet in content:
@@ -15,7 +25,7 @@ with open('data/stream_movie.json', 'r') as f:
             if k == "retweet_count": new_t.update({k:v})
             if k == "favorited": new_t.update({k:v})
             if k == "retweeted": new_t.update({k:v})
-        with open('data/stream_movie_pretty.json', 'a') as ff:
+        with open('data/stream_movie_pretty_requried.json', 'a') as ff:
             ff.write(json.dumps(new_t,sort_keys=True,indent=4)) # pretty-print
             ff.write('\n')
 
