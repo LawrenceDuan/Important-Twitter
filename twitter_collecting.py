@@ -33,6 +33,7 @@ class MyListener(StreamListener):
         try:
             with open(self.outfile, 'a') as f:
                 f.write(data)
+                print_count()
                 return True
         except BaseException as e:
             print("Error on_data: %s" % str(e))
@@ -64,6 +65,12 @@ def convert_valid(one_char):
     else:
         return '_'
 
+def print_count():
+    with open('data/stream_movie.json', 'r') as f:
+        for i, l in enumerate(f):
+            pass
+        print (i + 1, end='\r')
+
 @classmethod
 def parse(cls, api, raw):
     status = cls.first_parse(api, raw)
@@ -76,8 +83,9 @@ if __name__ == '__main__':
     auth = OAuthHandler(config.consumer_key, config.consumer_secret)
     auth.set_access_token(config.access_token, config.access_secret)
     api = tweepy.API(auth)
-try:
-    twitter_stream = Stream(auth, MyListener(args.data_dir, args.query))
-    twitter_stream.filter(track=[args.query])
-except (KeyboardInterrupt, SystemExit):
-    print('hahahah')
+
+    try:
+        twitter_stream = Stream(auth, MyListener(args.data_dir, args.query))
+        twitter_stream.filter(track=[args.query])
+    except (KeyboardInterrupt, SystemExit):
+        print_count()
