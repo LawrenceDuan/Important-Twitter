@@ -47,6 +47,8 @@ class MyListener(StreamListener):
             time.sleep(5)
             return True
 
+        # If the number of tweets collected reach the number of required by in_reply_to_user_id
+        #   stop the streamer
         if temp_number == self.number: return False
         if temp_number < self.number: return True
 
@@ -100,6 +102,8 @@ if __name__ == '__main__':
     while streamer_monitor:
         try:
             twitter_stream.filter(track=[args.query])
+            # If the number of tweets collected reach the number of required by in_reply_to_user_id
+            #   stop the program
             file = "%s/stream_%s.json" % (args.data_dir, args.query)
             with open(file, 'r') as f:
                 for i, l in enumerate(f):
