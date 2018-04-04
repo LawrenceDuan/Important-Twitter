@@ -7,6 +7,8 @@ import argparse
 import string
 import config
 import json
+import urllib3.exceptions
+import http
 
 def get_parser():
     # Get parser for command line arguments.
@@ -36,9 +38,24 @@ class MyListener(StreamListener):
                 print_count()
                 return True
         except BaseException as e:
-            print("Error on_data: %s" % str(e))
+            print("Error on_data: %s, Pausing..." % str(e))
+            print("~~~ Restarting stream search in 5 seconds... ~~~")
             time.sleep(5)
-        return True
+            return True
+        except http.client.IncompleteRead as e:
+            print("http.client Incomplete Read error: %s" % str(e))
+            print("~~~ Restarting stream search in 5 seconds... ~~~")
+            time.sleep(5)
+            return True
+        except urllib3.exceptions.ProtocolError as e:
+            print("urllib3 Incomplete Read error: %s" % str(e))
+            print("~~~ Restarting stream search in 5 seconds... ~~~")
+            time.sleep(5)
+            return True
+        except:
+            print("~~~ Restarting stream search in 5 seconds... ~~~")
+            time.sleep(5)
+            return True
 
     def on_error(self, status):
         print(status)
@@ -84,8 +101,17 @@ if __name__ == '__main__':
     auth.set_access_token(config.access_token, config.access_secret)
     api = tweepy.API(auth)
 
-    try:
-        twitter_stream = Stream(auth, MyListener(args.data_dir, args.query))
-        twitter_stream.filter(track=[args.query])
-    except (KeyboardInterrupt, SystemExit):
-        print_count()
+    twitter_stream = Stream(auth, MyListener(args.data_dir, args.query))
+    while True:
+        try:
+            twitter_stream.filter(track=[args.query])
+        except http.client.IncompleteRead as e:
+            print("http.client Incomplete Read error: %s" % str(e))
+            print("~~~ Restarting stream search in 5 seconds... ~~~")
+            time.sleep(5)
+            continue
+        except urllib3.exceptions.ProtocolError as e:
+            print("urllib3 Incomplete Read error: %s" % str(e))
+            print("~~~ Restarting stream search in 5 seconds... ~~~")
+            time.sleep(5)
+            continue
