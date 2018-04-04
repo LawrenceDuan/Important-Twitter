@@ -42,20 +42,6 @@ class MyListener(StreamListener):
             print("~~~ Restarting stream search in 5 seconds... ~~~")
             time.sleep(5)
             return True
-        except http.client.IncompleteRead as e:
-            print("http.client Incomplete Read error: %s" % str(e))
-            print("~~~ Restarting stream search in 5 seconds... ~~~")
-            time.sleep(5)
-            return True
-        except urllib3.exceptions.ProtocolError as e:
-            print("urllib3 Incomplete Read error: %s" % str(e))
-            print("~~~ Restarting stream search in 5 seconds... ~~~")
-            time.sleep(5)
-            return True
-        except:
-            print("~~~ Restarting stream search in 5 seconds... ~~~")
-            time.sleep(5)
-            return True
 
     def on_error(self, status):
         print(status)
