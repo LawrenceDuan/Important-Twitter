@@ -18,7 +18,7 @@ def get_parser():
                         "--query",
                         dest="query",
                         help="Query/Filter",
-                        default='-')
+                        default='all')
     parser.add_argument("-d",
                         "--data-dir",
                         dest="data_dir",
@@ -49,7 +49,7 @@ class MyListener(StreamListener):
 
         # If the number of tweets collected reach the number of required by in_reply_to_user_id
         #   stop the streamer
-        if temp_number == self.number: return False
+        if temp_number >= self.number: return False
         if temp_number < self.number: return True
 
     def on_error(self, status):
@@ -81,8 +81,8 @@ def print_count(outfile_name):
     with open(outfile_name, 'r') as f:
         for i, l in enumerate(f):
             pass
-        print (i + 1, end='\r')
-        return i+1
+        print (i, end='\r')
+        return i
 
 @classmethod
 def parse(cls, api, raw):
@@ -101,14 +101,17 @@ if __name__ == '__main__':
     streamer_monitor = True
     while streamer_monitor:
         try:
-            twitter_stream.filter(track=[args.query])
+            if args.query == 'all':
+                twitter_stream.sample()
+            else:
+                twitter_stream.filter(track=[args.query])
             # If the number of tweets collected reach the number of required by in_reply_to_user_id
             #   stop the program
             file = "%s/stream_%s.json" % (args.data_dir, args.query)
             with open(file, 'r') as f:
                 for i, l in enumerate(f):
                     pass
-                if i == int(args.number):
+                if i >= int(args.number):
                     streamer_monitor = False
         except http.client.IncompleteRead as e:
             print("http.client Incomplete Read error: %s" % str(e))
